@@ -1,3 +1,4 @@
+from fastapi import Cookie
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 
@@ -12,9 +13,9 @@ def generate_token(payload: dict):
     return jwt.encode(dados, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def verify_token(token: str):
+def verify_token(access_token: str = Cookie(None)):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError:
         return None

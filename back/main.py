@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, include_router
+from routes import me, tasks
+from models.models import UserLogin, UserRegister
 
 api = FastAPI()
 
@@ -22,3 +24,5 @@ async def register():
     return {"message": "Registration successful"}
 
 
+api.include_router(me.router, prefix="/me", tags=["User"])
+api.include_router(tasks.router, prefix="/tasks", tags=["Tasks"])

@@ -1,9 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
 from core.config import settings
 
-# MySQL
 if settings.mysql_configured:
     DATABASE_URL = (
         f"mysql+pymysql://{settings.DB_USER}:"
@@ -12,12 +10,12 @@ if settings.mysql_configured:
         f"{settings.DB_PORT}/"
         f"{settings.DB_NAME}"
     )
-    print("🟢 Using MySQL/MariaDB database")
+    print("[+] Using MySQL/MariaDB database [+]")
 
-# SQLite fallback (dev/test)
+
 else:
     DATABASE_URL = "sqlite:///./dev_temp.db"
-    print("🟡 Using SQLite fallback database")
+    print("[!] Using SQLite fallback database [!]")
 
 engine = create_engine(
     DATABASE_URL,

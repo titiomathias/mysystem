@@ -1,9 +1,9 @@
 from sqlalchemy import (
-    Column, Integer, String, Enum, ForeignKey, TinyInteger
+    Column, Integer, String, Enum, ForeignKey, Boolean
 )
 from sqlalchemy.orm import relationship
 
-from base import Base
+from models.base import Base
 
 
 class Task(Base):
@@ -19,7 +19,7 @@ class Task(Base):
         default="once"
     )
     base_xp = Column(Integer, nullable=False)
-    status = Column(TinyInteger, nullable=False)
+    status = Column(Boolean, nullable=False)
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 

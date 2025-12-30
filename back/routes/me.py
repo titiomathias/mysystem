@@ -9,19 +9,19 @@ async def get_me():
 
 
 # Update user info
-@router.put("/me/profile")
+@router.put("/profile")
 async def update_me(user: dict):
     return {"updated_user": user}
 
 
 # Delete user account
-@router.delete("/me")
+@router.delete("/")
 async def delete_me():
     return {"message": "User account deleted"}
 
 
 # Change user password
-@router.post("/me/change-password")
+@router.post("/change-password")
 async def change_password(passwords: dict):
     return {"message": "Password changed successfully"}
 

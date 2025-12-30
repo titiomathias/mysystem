@@ -1,7 +1,6 @@
-from discord import Enum
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from enum import Enum, IntEnum
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 
 
@@ -10,6 +9,9 @@ class UserPublic(BaseModel):
     username: str
     email: EmailStr
     created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
 
 
 class UserLogin(BaseModel):
@@ -24,24 +26,17 @@ class UserRegister(BaseModel):
 
 
 class Attributes(BaseModel):
-    strength: int
-    agility: int
-    intelligence: int
-    stamina: int
-    wisdom: int
-    charisma: int
+    strength: int = Field(alias="str")
+    agility: int = Field(alias="agi")
+    intelligence: int = Field(alias="int")
+    stamina: int = Field(alias="con")
+    wisdom: int = Field(alias="wis")
+    charisma: int = Field(alias="cha")
 
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        fields = {
-            "strength": "str",
-            "agility": "agi",
-            "intelligence": "int",
-            "stamina": "con",
-            "wisdom": "wis",
-            "charisma": "cha",
-        }
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True
+    )
 
 
 class UserProfile(BaseModel):
@@ -50,8 +45,11 @@ class UserProfile(BaseModel):
     level: int
     created_at: datetime
     attributes: Attributes
-    class Config:
-        orm_mode = True
+
+    model_config = ConfigDict(
+        from_attributes=True,
+        validate_by_name=True
+    )
 
 
 class TaskFrequency(str, Enum):
@@ -75,7 +73,9 @@ class Task(BaseModel):
     base_xp: int
     status: TaskStatus
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(
+        from_attributes=True,
+        validate_by_name=True
+    )
 
 

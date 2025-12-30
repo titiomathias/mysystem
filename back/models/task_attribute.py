@@ -1,9 +1,9 @@
 from sqlalchemy import (
-    Column, Integer, Enum, ForeignKey, SmallInteger
+    Column, Integer, Enum, ForeignKey
 )
 from sqlalchemy.orm import relationship
 
-from base import Base
+from models.base import Base
 
 
 class TaskAttribute(Base):
@@ -14,7 +14,7 @@ class TaskAttribute(Base):
         Enum("cha", "wis", "int", "str", "agi", "con", name="attribute_type"),
         primary_key=True
     )
-    value = Column(SmallInteger, nullable=False)
+    value = Column(Integer, nullable=False)
 
     # Relationships
     task = relationship("Task", back_populates="attributes")

@@ -25,5 +25,9 @@ class Task(Base):
 
     # Relationships
     user = relationship("User", back_populates="tasks")
-    attributes = relationship("TaskAttribute", back_populates="task")
+    attributes = relationship(
+        "TaskAttribute",
+        back_populates="task",
+        cascade="all, delete-orphan"
+    )
     logs = relationship("TaskLog", back_populates="task")

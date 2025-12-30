@@ -4,6 +4,15 @@ from datetime import datetime
 from typing import Optional
 
 
+class AttributeType(str, Enum):
+    cha = "cha"
+    wis = "wis"
+    int = "int"
+    str = "str"
+    agi = "agi"
+    con = "con"
+
+
 class UserPublic(BaseModel):
     id: int
     username: str
@@ -64,18 +73,37 @@ class TaskStatus(IntEnum):
     DONE = 1
 
 
-class TaskModel(BaseModel):
-    id: int
+class TaskAttributeCreate(BaseModel):
+    attribute: AttributeType
+    value: int
+
+
+class TaskCreate(BaseModel):
     name: str
     description: Optional[str] = None
     category: str
     frequency: TaskFrequency
     base_xp: int
+    attributes: list[TaskAttributeCreate]
+
+
+class TaskOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+    category: str
+    frequency: TaskFrequency
+    base_xp: int
     status: TaskStatus
+    attributes: list[TaskAttributeCreate]
 
-    model_config = ConfigDict(
-        from_attributes=True,
-        validate_by_name=True
-    )
+    model_config = ConfigDict(from_attributes=True)
 
 
+class TaskUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    frequency: Optional[TaskFrequency] = None
+    base_xp: Optional[int] = None
+    status: Optional[TaskStatus] = None

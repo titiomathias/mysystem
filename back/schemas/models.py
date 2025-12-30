@@ -64,7 +64,7 @@ class TaskStatus(IntEnum):
     DONE = 1
 
 
-class Task(BaseModel):
+class TaskModel(BaseModel):
     id: int
     name: str
     description: Optional[str] = None

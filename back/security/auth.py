@@ -1,4 +1,4 @@
-from fastapi import Cookie
+from fastapi import Cookie, HTTPException
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 
@@ -19,3 +19,14 @@ def verify_token(access_token: str = Cookie(None)):
         return payload
     except JWTError:
         return None
+    
+
+async def verify_cookie(access_token: str = Cookie(None)):
+    if not access_token:
+        raise HTTPException(401, "Token ausente")
+
+    try:
+        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        raise HTTPException(401, "Token inválido ou expirado")

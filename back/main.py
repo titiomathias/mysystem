@@ -2,6 +2,7 @@ from fastapi import FastAPI, Response, HTTPException, Depends
 from routes import me, tasks
 from schemas.models import UserLogin, UserRegister
 from models.user import User
+from models.attribute import Attribute
 from db.session import engine
 from db.base import Base
 from sqlalchemy.orm import Session
@@ -9,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from db.deps import get_db
 from security.security import hash_password, verify_password
 import models
-from security.auth import generate_token, verify_token
+from security.auth import generate_token
 
 api = FastAPI()
 
@@ -73,6 +74,24 @@ async def register(user: UserRegister, response: Response, db: Session = Depends
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Email or username already exists")
+    
+    new_attributes = Attribute(
+        user_id=new_user.id,
+        str=10,
+        int=10,
+        con=10,
+        wis=10,
+        cha=10,
+        agi=10
+    )
+
+    try:
+        db.add(new_attributes)
+        db.commit()
+        db.refresh(new_attributes)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not create user attributes")
 
     token = generate_token({"user_id": new_user.id, "email": new_user.email})
 

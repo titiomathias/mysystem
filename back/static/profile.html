@@ -1,43 +1,152 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Perfil | MySystem</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Perfil | MySystem</title>
+        <link rel="stylesheet" href="css/style.css">
+        <script src="https://cdn.tailwindcss.com"></script>
 
-<header class="top-bar">
-    <h1>MySystem</h1>
-    <button onclick="logout()">Sair</button>
-</header>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#6366f1'
+                        }
+                    }
+                }
+            }
+        </script>
+    </head>
 
-<main class="profile-container">
+    <body class="bg-slate-900 text-slate-100 min-h-screen">
 
-    <section class="profile-header">
-        <div class="avatar"></div>
+        <!-- HEADER -->
+        <header class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+            <a href="index.html"><h1 class="text-2xl font-bold tracking-wide">⚔️ MySystem</h1></a>
 
-        <div>
-            <h2 id="username"></h2>
-            <p id="level"></p>
-        </div>
+            <button
+                onclick="logout()"
+                class="
+                    bg-red-500/10
+                    text-red-400
+                    px-4 py-2
+                    rounded-xl
+                    hover:bg-red-500/20
+                    transition
+                "
+            >
+                Sair
+            </button>
+        </header>
 
-        <div class="xp-circle">
-            <span id="xp-text">0 / 0</span>
-        </div>
-    </section>
+        <!-- MAIN -->
+        <main class="max-w-4xl mx-auto px-6 py-8 space-y-8">
 
-    <section class="attributes">
-        <div class="attr">FORÇA <span id="str"></span></div>
-        <div class="attr">AGILIDADE <span id="agi"></span></div>
-        <div class="attr">CONSTITUIÇÃO <span id="con"></span></div>
-        <div class="attr">SABEDORIA <span id="wis"></span></div>
-        <div class="attr">INTELIGÊNCIA <span id="int"></span></div>
-        <div class="attr">CARISMA <span id="cha"></span></div>
-    </section>
+            <!-- PROFILE HEADER -->
+            <section
+                class="
+                    bg-slate-800
+                    border border-slate-700
+                    rounded-2xl
+                    p-6
+                    flex
+                    items-center
+                    gap-6
+                    animate-fade-in
+                "
+            >
+                <!-- AVATAR -->
+                <div
+                    class="
+                        w-20 h-20
+                        rounded-full
+                        bg-gradient-to-br from-indigo-500 to-purple-600
+                        flex items-center justify-center
+                        text-3xl font-bold
+                    "
+                >
+                    🧙
+                </div>
 
-</main>
+                <!-- USER INFO -->
+                <div class="flex-1">
+                    <h2 id="username" class="text-2xl font-semibold"></h2>
+                    <p id="level" class="text-slate-400"></p>
+                </div>
 
-<script src="js/profile.js"></script>
-</body>
+                <!-- XP -->
+                <div class="relative w-24 h-24">
+                    <div
+                        id="xp-circle"
+                        class="
+                            w-full h-full
+                            rounded-full
+                            flex items-center justify-center
+                            text-sm font-semibold
+                        "
+                    >
+                        <span id="xp-text" class="z-10">0 / 0</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ATTRIBUTES -->
+            <section
+                class="
+                    bg-slate-800
+                    border border-slate-700
+                    rounded-2xl
+                    p-6
+                    grid
+                    grid-cols-2
+                    md:grid-cols-3
+                    gap-4
+                    animate-fade-in
+                "
+            >
+                <div class="attr-card">FORÇA: <span id="str"></span></div>
+                <div class="attr-card">AGILIDADE: <span id="agi"></span></div>
+                <div class="attr-card">CONSTITUIÇÃO: <span id="con"></span></div>
+                <div class="attr-card">SABEDORIA: <span id="wis"></span></div>
+                <div class="attr-card">INTELIGÊNCIA: <span id="int"></span></div>
+                <div class="attr-card">CARISMA: <span id="cha"></span></div>
+            </section>
+
+        </main>
+
+        <script src="js/profile.js"></script>
+
+        <!-- STYLES AUX -->
+        <style>
+            @keyframes fade-in {
+                from {
+                    opacity: 0;
+                    transform: translateY(8px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .animate-fade-in {
+                animation: fade-in 0.4s ease-out;
+            }
+
+            .attr-card {
+                @apply
+                    bg-slate-700
+                    border border-slate-600
+                    rounded-xl
+                    px-4 py-3
+                    flex
+                    justify-between
+                    items-center
+                    font-semibold
+                    text-sm
+                    tracking-wide;
+            }
+        </style>
+    </body>
 </html>

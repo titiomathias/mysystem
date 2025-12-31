@@ -31,6 +31,37 @@ async function loadTasks() {
     renderTasks(data);
 }
 
+function openTaskModal(task) {
+    document.getElementById("modal-title").innerText = task.name;
+    document.getElementById("modal-description").innerText = task.description || "Sem descrição";
+    document.getElementById("modal-category").innerText = task.category;
+    document.getElementById("modal-xp").innerText = task.base_xp;
+    document.getElementById("modal-frequency").innerText = task.frequency;
+    document.getElementById("modal-streak").innerText = task.streak_count ?? 0;
+
+    const attrList = document.getElementById("modal-attributes");
+    attrList.innerHTML = "";
+
+    if (task.attributes.length === 0) {
+        attrList.innerHTML = "<li>Nenhum atributo afetado</li>";
+    } else {
+        task.attributes.forEach(attr => {
+            const li = document.createElement("li");
+            li.innerText = `${attr.attribute.toUpperCase()} +${attr.value}`;
+            attrList.appendChild(li);
+        });
+    }
+
+    document.getElementById("task-modal").classList.remove("hidden");
+    document.getElementById("task-modal").classList.add("flex");
+}
+
+function closeModal() {
+    const modal = document.getElementById("task-modal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+}
+
 function renderTasks(tasks) {
     const urgent = document.getElementById("urgent-tasks");
     const daily = document.getElementById("daily-tasks");
@@ -42,14 +73,46 @@ function renderTasks(tasks) {
 
     tasks.forEach(task => {
         const el = document.createElement("div");
-        el.className = "task";
-
-        el.innerHTML = `
-            <strong>${task.name}</strong>
-            <small>${task.category}</small>
+        el.className = `
+            flex items-center gap-3
+            bg-slate-700
+            border border-slate-600
+            rounded-xl
+            px-4 py-3
+            cursor-pointer
+            hover:bg-slate-600
+            transition
         `;
 
-        el.onclick = () => completeTask(task.id);
+        el.innerHTML = `
+            <input
+                type="checkbox"
+                ${task.completed ? "checked" : ""}
+                class="accent-indigo-500"
+            />
+
+            <div class="flex-1">
+                <strong>${task.name}</strong>
+                <p class="text-xs text-slate-400">${task.category}</p>
+            </div>
+
+            <button
+                class="text-slate-400 hover:text-white"
+                title="Detalhes"
+            >
+                ℹ️
+            </button>
+        `;
+
+        // ✔️ completar tarefa (card ou checkbox)
+        el.addEventListener("click", () => completeTask(task.id));
+
+        // ℹ️ abrir modal (sem completar!)
+        const infoBtn = el.querySelector("button");
+        infoBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            openTaskModal(task);
+        });
 
         if (task.frequency === "daily") {
             daily.appendChild(el);

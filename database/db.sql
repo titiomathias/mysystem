@@ -41,6 +41,9 @@ CREATE TABLE IF NOT EXISTS `mysystem`.`tasks` (
   `base_xp` INT NOT NULL,
   `status` TINYINT NOT NULL,
   `user_id` INT NOT NULL,
+  `last_completeted_at` TIMESTAMP NULL,
+  `streak_count` INT NOT NULL DEFAULT 0,
+  `best_streak` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   INDEX `fk_tasks_users_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `fk_tasks_users`
@@ -96,6 +99,7 @@ CREATE TABLE IF NOT EXISTS `mysystem`.`task_logs` (
   `completed_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `task_id` INT NOT NULL,
   `user_id` INT NOT NULL,
+  `streak_at_completion` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_task_logs_tasks1_idx` (`task_id` ASC) VISIBLE,
   INDEX `fk_task_logs_users1_idx` (`user_id` ASC) VISIBLE,

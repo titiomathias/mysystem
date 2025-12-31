@@ -93,15 +93,18 @@ class TaskCreate(BaseModel):
 class TaskOut(BaseModel):
     id: int
     name: str
-    description: str
+    description: str | None
     category: str
     frequency: TaskFrequency
     base_xp: int
     status: TaskStatus
 
-    last_completed_at: Optional[datetime]
+    last_completed_at: datetime | None
     streak_count: int
     best_streak: int
+
+    can_complete: bool
+    is_completed_today: bool
 
     attributes: list[TaskAttributeCreate]
 

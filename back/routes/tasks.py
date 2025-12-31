@@ -7,7 +7,7 @@ from models.task_attribute import TaskAttribute
 from schemas.models import TaskOut, TaskStatus, TaskCreate, TaskUpdate
 from security.auth import verify_cookie
 from db.deps import get_db
-from core.progression import xp_to_next_level
+from core.progression import xp_to_next_level, can_complete_task
 from sqlalchemy.orm import Session, joinedload
 from datetime import datetime, timedelta
 
@@ -30,7 +30,30 @@ def get_tasks(
         .all()
     )
 
-    return tasks
+    result: list[TaskOut] = []
+
+    for task in tasks:
+        can_complete = can_complete_task(task)
+
+        result.append(
+            TaskOut(
+                id=task.id,
+                name=task.name,
+                description=task.description,
+                category=task.category,
+                frequency=task.frequency,
+                base_xp=task.base_xp,
+                status=task.status,
+                last_completed_at=task.last_completed_at,
+                streak_count=task.streak_count,
+                best_streak=task.best_streak,
+                can_complete=can_complete,
+                is_completed_today=not can_complete,
+                attributes=task.attributes
+            )
+        )
+
+    return result
 
 
 @router.post("/", response_model=TaskOut, status_code=201)

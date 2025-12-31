@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Response
+from sqlalchemy import func
 from models.task import Task
 from models.user import User
 from models.task_log import TaskLog
@@ -7,19 +8,29 @@ from schemas.models import TaskOut, TaskStatus, TaskCreate, TaskUpdate
 from security.auth import verify_cookie
 from db.deps import get_db
 from core.progression import xp_to_next_level
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from datetime import datetime, timedelta
 
 router = APIRouter()
 
 # Get all tasks
-@router.get("/")
-def get_tasks(user = Depends(verify_cookie), db = Depends(get_db)):
-    tasks = db.query(Task).filter(Task.user_id == user["user_id"]).all()
+@router.get("/", response_model=list[TaskOut])
+def get_tasks(
+    user=Depends(verify_cookie),
+    db: Session = Depends(get_db)
+):
+    tasks = (
+        db.query(Task)
+        .options(joinedload(Task.attributes))
+        .filter(Task.user_id == user["user_id"])
+        .order_by(
+            Task.frequency.desc(),
+            Task.last_completed_at.asc().nullsfirst()
+        )
+        .all()
+    )
 
-    return {
-        "tasks": tasks
-    }
+    return tasks
 
 
 @router.post("/", response_model=TaskOut, status_code=201)
@@ -35,8 +46,12 @@ def create_task(
         frequency=task_data.frequency,
         base_xp=task_data.base_xp,
         user_id=user["user_id"],
-        status=TaskStatus.PENDING
+        status=TaskStatus.PENDING,
+        streak_count=0,
+        best_streak=0,
+        last_completed_at=None
     )
+
 
     db.add(task)
     db.flush()
@@ -111,45 +126,70 @@ def complete_task(
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    # 2. Validação de repetição
-    last_log = (
-        db.query(TaskLog)
-        .filter(
-            TaskLog.task_id == task.id,
-            TaskLog.user_id == user["user_id"]
-        )
-        .order_by(TaskLog.completed_at.desc())
-        .first()
-    )
-
     now = datetime.utcnow()
 
-    if task.frequency == "once" and last_log:
-        raise HTTPException(status_code=400, detail="Task already completed")
+    # 2. Validação de repetição
+    if task.last_completed_at:
+        if task.frequency == "once":
+            raise HTTPException(status_code=400, detail="Task already completed")
 
-    if task.frequency == "daily" and last_log:
-        if last_log.completed_at.date() == now.date():
-            raise HTTPException(status_code=400, detail="Task already completed today")
+        if task.frequency == "daily":
+            if task.last_completed_at.date() == now.date():
+                raise HTTPException(status_code=400, detail="Task already completed today")
 
-    if task.frequency == "weekly" and last_log:
-        if last_log.completed_at >= now - timedelta(days=7):
-            raise HTTPException(status_code=400, detail="Task already completed this week")
+        if task.frequency == "weekly":
+            if task.last_completed_at >= now - timedelta(days=7):
+                raise HTTPException(status_code=400, detail="Task already completed this week")
 
-    # 3. Calcula XP
+    # 3. Atualiza streak
+    if task.last_completed_at:
+        delta = now.date() - task.last_completed_at.date()
+
+        if task.frequency == "daily" and delta.days == 1:
+            task.streak_count += 1
+        elif task.frequency == "weekly" and delta.days <= 7:
+            task.streak_count += 1
+        else:
+            task.streak_count = 1
+    else:
+        task.streak_count = 1
+
+    task.best_streak = max(task.best_streak, task.streak_count)
+
+    # 4. Calcula XP
     attr_bonus = sum(a.value for a in task.attributes)
-    xp_earned = task.base_xp + attr_bonus
+    streak_bonus = int(task.base_xp * min(task.streak_count * 0.05, 0.5))
+    xp_earned = task.base_xp + attr_bonus + streak_bonus
 
-    # 4. Atualiza usuário
+    # 5. Atualiza task
+    task.last_completed_at = now
+
+    if task.frequency == "once":
+        task.status = TaskStatus.DONE
+
+    # 6. Log
+    db.add(
+        TaskLog(
+            task_id=task.id,
+            user_id=user["user_id"],
+            xp_earned=xp_earned,
+            streak_at_completion=task.streak_count
+        )
+    )
+
+    # 7. Level up (derivado dos logs)
+    total_xp = (
+        db.query(func.sum(TaskLog.xp_earned))
+        .filter(TaskLog.user_id == user["user_id"])
+        .scalar()
+    ) or 0
+
     db_user = db.query(User).filter(User.id == user["user_id"]).first()
 
-    db_user.xp += xp_earned
-
-    # 5. Level up
-    while db_user.xp >= xp_to_next_level(db_user.level):
-        db_user.xp -= xp_to_next_level(db_user.level)
+    while total_xp >= xp_to_next_level(db_user.level):
+        total_xp -= xp_to_next_level(db_user.level)
         db_user.level += 1
 
-        # ganha +1 em todos atributos
         db_user.attributes.str += 1
         db_user.attributes.agi += 1
         db_user.attributes.int += 1
@@ -157,24 +197,27 @@ def complete_task(
         db_user.attributes.wis += 1
         db_user.attributes.cha += 1
 
-    # 6. Log
-    db.add(
-        TaskLog(
-            task_id=task.id,
-            user_id=db_user.id,
-            xp_earned=xp_earned
-        )
-    )
+    db_user = db.query(User).filter(User.id == user["user_id"]).first()
 
-    # 7. Status
-    if task.frequency == "once":
-        task.status = TaskStatus.DONE
+    for attr in task.attributes:
+        if attr.attribute == "str":
+            db_user.attributes.str += attr.value
+        elif attr.attribute == "agi":
+            db_user.attributes.agi += attr.value
+        elif attr.attribute == "int":
+            db_user.attributes.int += attr.value
+        elif attr.attribute == "con":
+            db_user.attributes.con += attr.value
+        elif attr.attribute == "wis":
+            db_user.attributes.wis += attr.value
+        elif attr.attribute == "cha":
+            db_user.attributes.cha += attr.value
 
     db.commit()
 
     return {
         "message": "Task completed",
         "xp_earned": xp_earned,
+        "streak": task.streak_count,
         "level": db_user.level
     }
-

@@ -55,6 +55,9 @@ class UserProfile(BaseModel):
     created_at: datetime
     attributes: Attributes
 
+    current_xp: Optional[int] = None
+    next_level_xp: Optional[int] = None
+
     model_config = ConfigDict(
         from_attributes=True,
         validate_by_name=True
@@ -69,8 +72,8 @@ class TaskFrequency(str, Enum):
 
 
 class TaskStatus(IntEnum):
-    PENDING = 0
-    DONE = 1
+    PENDING = False
+    DONE = True
 
 
 class TaskAttributeCreate(BaseModel):
@@ -90,11 +93,16 @@ class TaskCreate(BaseModel):
 class TaskOut(BaseModel):
     id: int
     name: str
-    description: Optional[str]
+    description: str
     category: str
     frequency: TaskFrequency
     base_xp: int
     status: TaskStatus
+
+    last_completed_at: Optional[datetime]
+    streak_count: int
+    best_streak: int
+
     attributes: list[TaskAttributeCreate]
 
     model_config = ConfigDict(from_attributes=True)

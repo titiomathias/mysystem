@@ -1,32 +1,51 @@
 from fastapi import APIRouter, HTTPException, Depends, Cookie, Response
-from security.auth import verify_token, verify_cookie
+from security.auth import verify_cookie
 from db.deps import get_db
 from models.user import User
+from models.task_log import TaskLog
 from models.attribute import Attribute
 from schemas.models import UserProfile
 from sqlalchemy.orm import Session
+from core.progression import xp_to_next_level, calculate_level_and_xp
+from sqlalchemy import func
 
 router = APIRouter()
 
 # Get user info
 @router.get("/")
-def get_me(token = Depends(verify_cookie), db: Session = Depends(get_db)):
+def get_me(
+    token=Depends(verify_cookie),
+    db: Session = Depends(get_db)
+):
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
-    user_id = token.get("user_id")
+    user_id = token["user_id"]
 
     user = db.query(User).filter(User.id == user_id).first()
-
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
-    attributes = db.query(Attribute).filter(Attribute.user_id == user_id).first()
-    
+
+    attributes = (
+        db.query(Attribute)
+        .filter(Attribute.user_id == user_id)
+        .first()
+    )
+
+    total_xp = (
+        db.query(func.coalesce(func.sum(TaskLog.xp_earned), 0))
+        .filter(TaskLog.user_id == user_id)
+        .scalar()
+    )
+
+    level, current_xp = calculate_level_and_xp(total_xp)
+
     profile = UserProfile(
         username=user.username,
         email=user.email,
-        level=user.level,
+        level=level,
+        current_xp=current_xp,
+        next_level_xp=xp_to_next_level(level),
         created_at=user.created_at,
         attributes=attributes
     )

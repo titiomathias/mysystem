@@ -3,7 +3,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from models.base import Base
+from db.base import Base
 
 
 class TaskAttribute(Base):

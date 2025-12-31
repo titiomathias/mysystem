@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from db.deps import get_db
 from security.security import hash_password, verify_password
-import models
 from security.auth import generate_token
 
 api = FastAPI()

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <title>MySystem</title>
+        <link rel="stylesheet" href="css/style.css" />
+    </head>
+    <body>
+
+    <header class="top-bar">
+        <h1>MySystem</h1>
+
+        <div class="user-info">
+            <span id="username">Usuário</span>
+            <span id="level">Level 0</span>
+        </div>
+    </header>
+
+    <main class="board">
+
+        <section class="column">
+            <h2>Missões Urgentes</h2>
+            <div class="tasks" id="urgent-tasks"></div>
+        </section>
+
+        <section class="column">
+            <h2>Missões Diárias</h2>
+            <div class="tasks" id="daily-tasks"></div>
+        </section>
+
+        <section class="column">
+            <h2>Missões Semanais</h2>
+            <div class="tasks" id="weekly-tasks"></div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <button id="new-task">+ Nova Missão</button>
+    </footer>
+
+    <script src="js/api.js"></script>
+    </body>
+</html>

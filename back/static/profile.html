@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil | MySystem</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="top-bar">
+    <h1>MySystem</h1>
+    <button onclick="logout()">Sair</button>
+</header>
+
+<main class="profile-container">
+
+    <section class="profile-header">
+        <div class="avatar"></div>
+
+        <div>
+            <h2 id="username"></h2>
+            <p id="level"></p>
+        </div>
+
+        <div class="xp-circle">
+            <span id="xp-text">0 / 0</span>
+        </div>
+    </section>
+
+    <section class="attributes">
+        <div class="attr">FORÇA <span id="str"></span></div>
+        <div class="attr">AGILIDADE <span id="agi"></span></div>
+        <div class="attr">CONSTITUIÇÃO <span id="con"></span></div>
+        <div class="attr">SABEDORIA <span id="wis"></span></div>
+        <div class="attr">INTELIGÊNCIA <span id="int"></span></div>
+        <div class="attr">CARISMA <span id="cha"></span></div>
+    </section>
+
+</main>
+
+<script src="js/profile.js"></script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Response, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from routes import me, tasks
 from schemas.models import UserLogin, UserRegister
 from models.user import User
@@ -10,8 +11,22 @@ from sqlalchemy.exc import IntegrityError
 from db.deps import get_db
 from security.security import hash_password, verify_password
 from security.auth import generate_token
+from fastapi.staticfiles import StaticFiles
 
 api = FastAPI()
+
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:8000",
+        "http://localhost:8000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+api.mount("/app", StaticFiles(directory="static", html=True), name="static")
 
 @api.on_event("startup")
 def startup():
@@ -44,8 +59,11 @@ async def login(userData: UserLogin, response: Response, db: Session = Depends(g
         key="access_token",
         value=token,
         httponly=True,
-        max_age=1800
+        samesite="none",
+        secure=True,
+        path="/",
     )
+
 
     response.status_code = 200
 

@@ -12,14 +12,21 @@ from db.deps import get_db
 from security.security import hash_password, verify_password
 from security.auth import generate_token
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 
-api = FastAPI()
+
+api = FastAPI(
+    title="MySystem API",
+    description="API para o sistema de gamificação de tarefas MySystem",
+    version="1.0.0",
+    docs_url=None
+)
 
 api.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://127.0.0.1:8000",
-        "http://localhost:8000",
+        "https://mysystem.discloud.app",
+        "http://localhost:8080",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -34,9 +41,9 @@ def startup():
     Base.metadata.create_all(bind=engine)
 
 
-@api.get("/")
-async def read_root():
-    return {"message": "Hello, World!"}
+@api.get("/", include_in_schema=False)
+async def root():
+    return RedirectResponse(url="/app/index.html")
 
 
 @api.post("/login")
@@ -127,3 +134,14 @@ async def register(user: UserRegister, response: Response, db: Session = Depends
 
 api.include_router(me.router, prefix="/me", tags=["User"])
 api.include_router(tasks.router, prefix="/tasks", tags=["Tasks"])
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "main:api",
+        host="0.0.0.0",
+        port=8080,
+        log_level="info",
+        workers=1
+    )

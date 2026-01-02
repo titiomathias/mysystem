@@ -1,10 +1,14 @@
 from fastapi import Cookie, HTTPException
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import os
 
-SECRET_KEY = "chave-super-secreta-para-treinamento"
-ALGORITHM = "HS256"
-TOKEN_EXPIRE_HOURS = 1
+load_dotenv()
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALGORITHM = os.environ.get("ALGORITHM")
+TOKEN_EXPIRE_HOURS = int(os.environ.get("TOKEN_EXPIRE_HOURS"))
 
 def generate_token(payload: dict):
     dados = payload.copy()

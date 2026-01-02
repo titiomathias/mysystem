@@ -16,7 +16,7 @@ from fastapi import Query
 router = APIRouter()
 
 # Get all tasks
-@router.get("/", response_model=list[TaskOut])
+@router.get("", response_model=list[TaskOut])
 def get_tasks(
     user=Depends(verify_cookie),
     db: Session = Depends(get_db),
@@ -78,7 +78,7 @@ def get_tasks(
     return result
 
 
-@router.post("/", response_model=TaskOut, status_code=201)
+@router.post("/new-task", response_model=TaskOut, status_code=201)
 def create_task(
     task_data: TaskCreate,
     user=Depends(verify_cookie),

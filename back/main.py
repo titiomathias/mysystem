@@ -26,7 +26,7 @@ api.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://mysystem.discloud.app",
-        "http://0.0.0.0:8080",
+        "https://0.0.0.0:8080",
     ],
     allow_credentials=True,
     allow_methods=["*"],

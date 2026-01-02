@@ -6,6 +6,12 @@
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Você foi escolhido para ser um Jogador. Você aceita? Torne-se sua melhor versão e suba de nível.">
+    <meta name="author" content="Matheus de Alencar">
+    <meta property="og:title" content="MySystem - Torne-se um Jogador">
+    <meta property="og:description" content="Você foi escolhido para ser um Jogador. Você aceita? Torne-se sua melhor versão e suba de nível.">
+    <meta property="og:image" content="https://i.imgur.com/ZmcwNTO.jpeg">
+    <meta property="og:url" content="https://mysystem.discloud.app/">
     <script>
         tailwind.config = {
             theme: {
@@ -436,6 +442,7 @@
         </div>
     </div>
     <script>
+        // Create a new task
         let currentTask = null;
 
         const createTaskModal = document.getElementById("create-task-modal");
@@ -480,7 +487,7 @@
                 attributes: attributes
             };
 
-            const res = await fetch(`${API_URL}/tasks`, {
+            const res = await fetch(`${API_URL}/tasks/new-task`, {
                 method: "POST",
                 credentials: "include",
                 headers: {

@@ -13,7 +13,7 @@ from sqlalchemy import func
 router = APIRouter()
 
 # Get user info
-@router.get("/")
+@router.get("")
 def get_me(
     token=Depends(verify_cookie),
     db: Session = Depends(get_db)

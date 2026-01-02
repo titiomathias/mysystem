@@ -6,7 +6,6 @@ async function loadProfile() {
     });
 
     if (!res.ok) {
-        alert("Não autenticado");
         window.location.href = "login.html";
         return;
     }

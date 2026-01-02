@@ -51,5 +51,71 @@ function renderXP(currentXP, nextLevelXP) {
     text.innerText = `${currentXP} / ${nextLevelXP}`;
 }
 
+function openEditProfileModal() {
+    document.getElementById("edit-profile-modal").classList.remove("hidden");
+    document.getElementById("edit-profile-modal").classList.add("flex");
+}
+
+function closeEditProfileModal() {
+    document.getElementById("edit-profile-modal").classList.add("hidden");
+}
+
+document.getElementById("edit-profile-form").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const payload = {
+        username: document.getElementById("edit-username").value || null,
+        email: document.getElementById("edit-email").value || null
+    };
+
+    const res = await fetch(`${API_URL}/me/update`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+        alert("Erro ao atualizar perfil");
+        return;
+    }
+
+    closeEditProfileModal();
+    await loadProfile();
+});
+
+function openChangePasswordModal() {
+    document.getElementById("change-password-modal").classList.remove("hidden");
+    document.getElementById("change-password-modal").classList.add("flex");
+}
+
+function closeChangePasswordModal() {
+    document.getElementById("change-password-modal").classList.add("hidden");
+}
+
+document.getElementById("change-password-form").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const payload = {
+        new_password: document.getElementById("new-password").value,
+        confirm_password: document.getElementById("confirm-password").value
+    };
+
+    const res = await fetch(`${API_URL}/me/password`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+        alert("Senha atual incorreta");
+        return;
+    }
+
+    alert("Senha alterada com sucesso!");
+    closeChangePasswordModal();
+});
+
 
 loadProfile();

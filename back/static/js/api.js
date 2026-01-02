@@ -7,7 +7,7 @@ async function loadProfile() {
 
     if (!res.ok) {
         alert("Não autenticado");
-        window.location.href = "/login.html";
+        window.location.href = "login.html";
         return;
     }
 
@@ -17,10 +17,30 @@ async function loadProfile() {
     document.getElementById("level").innerText = `Level ${data.profile.level}`;
 }
 
-async function loadTasks() {
-    const res = await fetch(`${API_URL}/tasks`, {
-        credentials: "include"
-    });
+async function loadTasks(filters = {}) {
+    const params = new URLSearchParams();
+
+    // STATUS
+    if (filters.status === "can_complete") {
+        params.append("can_complete", "true");
+    } else if (filters.status === "completed") {
+        params.append("can_complete", "false");
+    }
+
+    // XP
+    if (filters.xp) {
+        params.append("xp", filters.xp); // high | low
+    }
+
+    // ATRIBUTO
+    if (filters.attribute) {
+        params.append("attribute", filters.attribute);
+    }
+
+    const res = await fetch(
+        `${API_URL}/tasks?${params.toString()}`,
+        { credentials: "include" }
+    );
 
     if (!res.ok) {
         alert("Erro ao carregar tarefas");
@@ -72,7 +92,10 @@ function renderTasks(tasks) {
     weekly.innerHTML = "";
 
     tasks.forEach(task => {
+        const isDone = task.is_completed_today || !task.can_complete;
+
         const el = document.createElement("div");
+
         el.className = `
             flex items-center gap-3
             bg-slate-700
@@ -87,8 +110,15 @@ function renderTasks(tasks) {
         el.innerHTML = `
             <input
                 type="checkbox"
-                ${task.completed ? "checked" : ""}
-                class="accent-indigo-500"
+                ${isDone ? "checked" : ""}
+                ${!task.can_complete ? "disabled" : ""}
+                class="
+                    w-5 h-5
+                    accent-indigo-500
+                    border border-slate-400
+                    rounded
+                    cursor-pointer
+                "
             />
 
             <div class="flex-1">
@@ -104,8 +134,15 @@ function renderTasks(tasks) {
             </button>
         `;
 
-        // ✔️ completar tarefa (card ou checkbox)
-        el.addEventListener("click", () => completeTask(task.id));
+        if (!task.can_complete) {
+            el.classList.add("opacity-60", "cursor-not-allowed");
+
+            el.addEventListener("click", (e) => {
+                e.stopPropagation();
+            });
+        } else {
+            el.addEventListener("click", () => completeTask(task.id, task.name));
+        }
 
         // ℹ️ abrir modal (sem completar!)
         const infoBtn = el.querySelector("button");
@@ -124,8 +161,13 @@ function renderTasks(tasks) {
     });
 }
 
+async function completeTask(taskId, taskName) {
+    const confirmed = confirm(
+        `Deseja realmente completar a missão:\n\n"${taskName}"?`
+    );
 
-async function completeTask(taskId) {
+    if (!confirmed) return;
+
     const res = await fetch(`${API_URL}/tasks/${taskId}/complete`, {
         method: "POST",
         credentials: "include"
@@ -141,27 +183,52 @@ async function completeTask(taskId) {
     alert(`+${data.xp_earned} XP | Streak: ${data.streak}`);
 
     await loadProfile();
-    await loadTasks();
+    await loadTasks(getActiveFilters());
 }
 
-async function completeTask(taskId) {
-    const res = await fetch(`${API_URL}/tasks/${taskId}/complete`, {
-        method: "POST",
-        credentials: "include"
+
+function toggleEdit(editing) {
+    isEditing = editing;
+
+    document.getElementById("task-view").classList.toggle("hidden", editing);
+    document.getElementById("task-edit").classList.toggle("hidden", !editing);
+}
+
+
+function openTaskModal(task) {
+    currentTask = task;
+    isEditing = false;
+
+    document.getElementById("modal-title").innerText = task.name;
+    document.getElementById("modal-description").innerText = task.description || "—";
+    document.getElementById("modal-category").innerText = task.category;
+    document.getElementById("modal-xp").innerText = task.base_xp;
+    document.getElementById("modal-frequency").innerText = task.frequency;
+    document.getElementById("modal-streak").innerText = task.streak_count ?? 0;
+
+    const list = document.getElementById("modal-attributes");
+    list.innerHTML = "";
+
+    task.attributes.forEach(a => {
+        const li = document.createElement("li");
+        li.innerText = `${a.attribute.toUpperCase()} +${a.value}`;
+        list.appendChild(li);
     });
 
-    if (!res.ok) {
-        const err = await res.json();
-        alert(err.detail || "Erro ao completar task");
-        return;
-    }
+    toggleEdit(false);
 
-    const data = await res.json();
-    alert(`+${data.xp_earned} XP | Streak: ${data.streak}`);
-
-    await loadProfile();
-    await loadTasks();
+    document.getElementById("task-modal").classList.remove("hidden");
+    document.getElementById("task-modal").classList.add("flex");
 }
 
-loadTasks();
-loadProfile();
+function cancelEdit() {
+    toggleEdit(false);
+}
+
+function getActiveFilters() {
+    return {
+        status: document.getElementById("filter-status").value,
+        xp: document.getElementById("filter-xp").value,
+        attribute: document.getElementById("filter-attr").value
+    };
+}

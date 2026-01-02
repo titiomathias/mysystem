@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+
 body {
     margin: 0;
     background: #0b0d10;
     color: white;
-    font-family: Arial, sans-serif;
+    font-family: "Orbitron", sans-serif;
 }
 
 .top-bar {
@@ -95,4 +97,22 @@ body {
     inset: 6px;
     background: #0f172a;
     border-radius: 9999px;
+}
+
+.attr-input {
+    background-color: #020617;
+    border: 1px solid #475569;
+    border-radius: 0.5rem;
+    padding: 0.4rem;
+}
+
+.name-level {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.input:focus,
+.attr-input:focus {
+    box-shadow: 0 0 10px rgba(99,102,241,0.4);
 }

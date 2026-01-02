@@ -3,9 +3,9 @@
     <head>
         <meta charset="UTF-8">
         <title>Perfil | MySystem</title>
-        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
         <script src="https://cdn.tailwindcss.com"></script>
-
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script>
             tailwind.config = {
                 theme: {
@@ -23,25 +23,28 @@
         <!-- HEADER -->
         <header class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
             <a href="index.html"><h1 class="text-2xl font-bold tracking-wide">⚔️ MySystem</h1></a>
+            
+            <div class="sub-menu">
+                <a href="index.html" class="bg-primary/20 text-white-400 px-4 py-3 rounded-xl hover:text-slate-500 transition">Voltar</a>
 
-            <button
-                onclick="logout()"
-                class="
-                    bg-red-500/10
-                    text-red-400
-                    px-4 py-2
-                    rounded-xl
-                    hover:bg-red-500/20
-                    transition
-                "
-            >
-                Sair
-            </button>
+                <button
+                    onclick="logout()"
+                    class="
+                        bg-red-500/10
+                        text-red-400
+                        px-4 py-2
+                        rounded-xl
+                        hover:bg-red-500/20
+                        transition
+                    "
+                >
+                    Sair
+                </button>
+            </div>
         </header>
 
         <!-- MAIN -->
         <main class="max-w-4xl mx-auto px-6 py-8 space-y-8">
-
             <!-- PROFILE HEADER -->
             <section
                 class="
@@ -74,6 +77,22 @@
                     <p id="level" class="text-slate-400"></p>
                 </div>
 
+                <div class="flex gap-3 mt-3">
+                    <button
+                        onclick="openEditProfileModal()"
+                        class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl text-sm transition"
+                    >
+                        ✏️ Editar Perfil
+                    </button>
+
+                    <button
+                        onclick="openChangePasswordModal()"
+                        class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-xl text-sm transition"
+                    >
+                        🔑 Alterar Senha
+                    </button>
+                </div>
+
                 <!-- XP -->
                 <div class="relative w-24 h-24">
                     <div
@@ -90,6 +109,8 @@
                 </div>
             </section>
 
+            <hr>
+
             <!-- ATTRIBUTES -->
             <section
                 class="
@@ -100,17 +121,220 @@
                     grid
                     grid-cols-2
                     md:grid-cols-3
-                    gap-4
+                    gap-6
                     animate-fade-in
                 "
             >
-                <div class="attr-card">FORÇA: <span id="str"></span></div>
-                <div class="attr-card">AGILIDADE: <span id="agi"></span></div>
-                <div class="attr-card">CONSTITUIÇÃO: <span id="con"></span></div>
-                <div class="attr-card">SABEDORIA: <span id="wis"></span></div>
-                <div class="attr-card">INTELIGÊNCIA: <span id="int"></span></div>
-                <div class="attr-card">CARISMA: <span id="cha"></span></div>
+                <div
+                    class="
+                        bg-slate-700
+                        border border-slate-600
+                        rounded-xl
+                        px-4 py-5
+                        flex flex-col
+                        items-center justify-center
+                        gap-2
+                        transition
+                        hover:border-indigo-500
+                        hover:bg-slate-600
+                    "
+                >
+                    <span class="text-xs uppercase tracking-widest text-slate-400">
+                        FORÇA
+                    </span>
+                    <span id="str" class="text-3xl font-bold text-white">
+                        10
+                    </span>
+                </div>
+
+
+                <div
+                    class="
+                        bg-slate-700
+                        border border-slate-600
+                        rounded-xl
+                        px-4 py-5
+                        flex flex-col
+                        items-center justify-center
+                        gap-2
+                        transition
+                        hover:border-indigo-500
+                        hover:bg-slate-600
+                    "
+                >
+                    <span class="text-xs uppercase tracking-widest text-slate-400">
+                        AGILIDADE
+                    </span>
+                    <span id="agi" class="text-3xl font-bold text-white">
+                        10
+                    </span>
+                </div>
+
+                <div
+                    class="
+                        bg-slate-700
+                        border border-slate-600
+                        rounded-xl
+                        px-4 py-5
+                        flex flex-col
+                        items-center justify-center
+                        gap-2
+                        transition
+                        hover:border-indigo-500
+                        hover:bg-slate-600
+                    "
+                >
+                    <span class="text-xs uppercase tracking-widest text-slate-400">
+                        CONSTITUIÇÃO
+                    </span>
+                    <span id="con" class="text-3xl font-bold text-white">
+                        10
+                    </span>
+                </div>
+
+                <div
+                    class="
+                        bg-slate-700
+                        border border-slate-600
+                        rounded-xl
+                        px-4 py-5
+                        flex flex-col
+                        items-center justify-center
+                        gap-2
+                        transition
+                        hover:border-indigo-500
+                        hover:bg-slate-600
+                    "
+                >
+                    <span class="text-xs uppercase tracking-widest text-slate-400">
+                        SABEDORIA
+                    </span>
+                    <span id="wis" class="text-3xl font-bold text-white">
+                        10
+                    </span>
+                </div>
+
+                <div
+                    class="
+                        bg-slate-700
+                        border border-slate-600
+                        rounded-xl
+                        px-4 py-5
+                        flex flex-col
+                        items-center justify-center
+                        gap-2
+                        transition
+                        hover:border-indigo-500
+                        hover:bg-slate-600
+                    "
+                >
+                    <span class="text-xs uppercase tracking-widest text-slate-400">
+                        INTELIGÊNCIA
+                    </span>
+                    <span id="int" class="text-3xl font-bold text-white">
+                        10
+                    </span>
+                </div>
+
+                <div
+                    class="
+                        bg-slate-700
+                        border border-slate-600
+                        rounded-xl
+                        px-4 py-5
+                        flex flex-col
+                        items-center justify-center
+                        gap-2
+                        transition
+                        hover:border-indigo-500
+                        hover:bg-slate-600
+                    "
+                >
+                    <span class="text-xs uppercase tracking-widest text-slate-400">
+                        CARISMA
+                    </span>
+                    <span id="cha" class="text-3xl font-bold text-white">
+                        10
+                    </span>
+                </div>
             </section>
+
+            <div
+                id="edit-profile-modal"
+                class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50"
+            >
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-md">
+                    <h2 class="text-xl font-semibold mb-4">✏️ Editar Perfil</h2>
+
+                    <form id="edit-profile-form" class="space-y-4">
+                        <input
+                            id="edit-username"
+                            placeholder="Novo username"
+                            class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2"
+                        />
+
+                        <input
+                            id="edit-email"
+                            type="email"
+                            placeholder="Novo e-mail"
+                            class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2"
+                        />
+
+                        <div class="flex gap-2">
+                            <button type="submit" class="flex-1 bg-primary py-2 rounded-lg">
+                                Salvar
+                            </button>
+                            <button
+                                type="button"
+                                onclick="closeEditProfileModal()"
+                                class="flex-1 bg-slate-600 py-2 rounded-lg"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div
+                id="change-password-modal"
+                class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50"
+            >
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-md">
+                    <h2 class="text-xl font-semibold mb-4">🔑 Alterar Senha</h2>
+
+                    <form id="change-password-form" class="space-y-4">
+                        <input
+                            id="new-password"
+                            type="password"
+                            placeholder="Digite sua nova senha"
+                            class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2"
+                            required
+                        />
+
+                        <input
+                            id="confirm-password"
+                            type="password"
+                            placeholder="Confirme sua nova senha"
+                            class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2"
+                            required
+                        />
+
+                        <div class="flex gap-2">
+                            <button type="submit" class="flex-1 bg-primary py-2 rounded-lg">
+                                Alterar
+                            </button>
+                            <button
+                                type="button"
+                                onclick="closeChangePasswordModal()"
+                                class="flex-1 bg-slate-600 py-2 rounded-lg"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
         </main>
 
@@ -133,18 +357,19 @@
                 animation: fade-in 0.4s ease-out;
             }
 
-            .attr-card {
-                @apply
-                    bg-slate-700
-                    border border-slate-600
-                    rounded-xl
-                    px-4 py-3
-                    flex
-                    justify-between
-                    items-center
-                    font-semibold
-                    text-sm
-                    tracking-wide;
+            @keyframes fade-in {
+                from {
+                    opacity: 0;
+                    transform: translateY(8px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .animate-fade-in {
+                animation: fade-in 0.4s ease-out;
             }
         </style>
     </body>

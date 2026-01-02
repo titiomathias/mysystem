@@ -18,5 +18,5 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
         return;
     }
 
-    // window.location.href = "index.html";
+    window.location.href = "index.html";
 });

@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends, Cookie, Response
 from security.auth import verify_cookie
+from security.security import hash_password
 from db.deps import get_db
 from models.user import User
 from models.task_log import TaskLog
 from models.attribute import Attribute
-from schemas.models import UserProfile
+from schemas.models import UserProfile, UserUpdate
 from sqlalchemy.orm import Session
 from core.progression import xp_to_next_level, calculate_level_and_xp
 from sqlalchemy import func
@@ -54,10 +55,25 @@ def get_me(
 
 
 # Update user info
-@router.put("/profile")
-def update_me(user: dict):
-    return {"updated_user": user}
+@router.put("/update")
+def update_me(user: UserUpdate, db: Session = Depends(get_db), token=Depends(verify_cookie)):
+    user_id = token["user_id"]
 
+    db_user = db.query(User).filter(User.id == user_id).first()
+
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.username is not None:
+        db_user.username = user.username
+    if user.email is not None:
+        db_user.email = user.email
+
+    db.commit()
+    db.refresh(db_user)
+
+    return {"message": "User updated successfully"}
+    
 
 # Delete user account
 @router.delete("/")
@@ -77,7 +93,28 @@ def delete_me(user = Depends(verify_cookie), db: Session = Depends(get_db), resp
 
 
 # Change user password
-@router.post("/change-password")
-def change_password(passwords: dict):
+@router.post("/password")
+def change_password(passwords: dict, user=Depends(verify_cookie), db: Session = Depends(get_db)):
+    user_id = user["user_id"]
+
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    new_password = passwords.get("new_password")
+    confirm_password = passwords.get("confirm_password")
+
+    if new_password != confirm_password or new_password is None or confirm_password is None:
+        raise HTTPException(status_code=400, detail="Passwords do not match")
+    
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters long")
+
+    user.password_hash = hash_password(new_password)
+
+    db.commit()
+    db.refresh(user)
+
     return {"message": "Password changed successfully"}
 

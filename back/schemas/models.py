@@ -22,6 +22,10 @@ class UserPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -79,6 +83,8 @@ class TaskStatus(IntEnum):
 class TaskAttributeCreate(BaseModel):
     attribute: AttributeType
     value: int
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TaskCreate(BaseModel):

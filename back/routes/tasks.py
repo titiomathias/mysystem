@@ -10,6 +10,8 @@ from db.deps import get_db
 from core.progression import xp_to_next_level, can_complete_task
 from sqlalchemy.orm import Session, joinedload
 from datetime import datetime, timedelta
+from typing import Optional
+from fastapi import Query
 
 router = APIRouter()
 
@@ -17,12 +19,29 @@ router = APIRouter()
 @router.get("/", response_model=list[TaskOut])
 def get_tasks(
     user=Depends(verify_cookie),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+
+    can_complete: Optional[bool] = Query(None),
+    xp: Optional[str] = Query(None),
+    attribute: Optional[str] = Query(None),
 ):
-    tasks = (
+    
+    query = (
         db.query(Task)
         .options(joinedload(Task.attributes))
         .filter(Task.user_id == user["user_id"])
+    )
+
+    if xp == "high":
+        query = query.order_by(Task.base_xp.desc())
+
+    if attribute:
+        query = query.join(Task.attributes).filter(
+            TaskAttribute.attribute == attribute
+        )
+
+    tasks = (
+        query
         .order_by(
             Task.frequency.desc(),
             Task.last_completed_at.asc().nullsfirst()
@@ -33,7 +52,10 @@ def get_tasks(
     result: list[TaskOut] = []
 
     for task in tasks:
-        can_complete = can_complete_task(task)
+        task_can_complete = can_complete_task(task)
+
+        if can_complete is not None and task_can_complete != can_complete:
+            continue
 
         result.append(
             TaskOut(
@@ -47,8 +69,8 @@ def get_tasks(
                 last_completed_at=task.last_completed_at,
                 streak_count=task.streak_count,
                 best_streak=task.best_streak,
-                can_complete=can_complete,
-                is_completed_today=not can_complete,
+                can_complete=task_can_complete,
+                is_completed_today=not task_can_complete,
                 attributes=task.attributes
             )
         )
@@ -91,6 +113,9 @@ def create_task(
     db.commit()
     db.refresh(task)
 
+    task.can_complete = can_complete_task(task)
+    task.is_completed_today = not task.can_complete
+
     return task
 
 
@@ -130,7 +155,25 @@ def update_task(
     db.commit()
     db.refresh(db_task)
 
-    return db_task
+    # 🔥 MESMA LÓGICA DO GET
+    can_complete = can_complete_task(db_task)
+
+    return TaskOut(
+        id=db_task.id,
+        name=db_task.name,
+        description=db_task.description,
+        category=db_task.category,
+        frequency=db_task.frequency,
+        base_xp=db_task.base_xp,
+        status=db_task.status,
+        last_completed_at=db_task.last_completed_at,
+        streak_count=db_task.streak_count,
+        best_streak=db_task.best_streak,
+        attributes=db_task.attributes,
+
+        can_complete=can_complete,
+        is_completed_today=not can_complete
+    )
 
 
 @router.post("/{task_id}/complete")

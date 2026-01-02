@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <title>MySystem</title>
-
+    <link rel="stylesheet" href="css/style.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
         tailwind.config = {
             theme: {
@@ -30,26 +30,125 @@
         </h1>
 
         <div class="flex items-center gap-4 text-sm">
-            <span id="username" class="font-semibold">
-                Usuário
-            </span>
+            <div class="name-level">
+                <span id="username" class="font-semibold">
+                    Usuário
+                </span>
 
-            <span
-                id="level"
-                class="bg-primary/20 text-primary px-3 py-1 rounded-full font-semibold"
+                <span
+                    id="level"
+                    class="bg-primary/20 text-primary px-3 rounded-full font-semibold"
+                >
+                    Lv 0
+                </span>
+            </div>
+            <a
+                href="profile.html"
+                title="Meu perfil"
+                class="
+                    flex items-center justify-center
+                    w-10 h-10
+                    rounded-full
+                    bg-slate-700
+                    hover:bg-slate-600
+                    transition
+                    group
+                "
             >
-                Lv 0
-            </span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-slate-300 group-hover:text-white"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                    />
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4.5 20.25a8.25 8.25 0 0115 0"
+                    />
+                </svg>
+            </a>
         </div>
     </header>
+
+    <!-- FILTER TOGGLE -->
+    <div class="px-6 py-3 border-b border-slate-700 bg-slate-800">
+        <button
+            id="toggle-filters"
+            class="
+                bg-slate-700
+                hover:bg-slate-600
+                px-4 py-2
+                rounded-lg
+                text-sm
+                font-semibold
+                transition
+                flex items-center gap-2
+            "
+        >
+            Filtrar Missões
+        </button>
+
+        <!-- FILTER BAR -->
+        <div
+            id="filter-bar"
+            class="mt-4 hidden"
+        >
+            <div class="flex flex-wrap gap-3 items-center">
+
+                <!-- STATUS -->
+                <select
+                    id="filter-status"
+                    class="bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm"
+                >
+                    <option value="all">Todas</option>
+                    <option value="can_complete">Disponíveis</option>
+                    <option value="completed">Concluídas</option>
+                </select>
+
+                <!-- XP -->
+                <select
+                    id="filter-xp"
+                    class="bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm"
+                >
+                    <option value="">XP (todos)</option>
+                    <option value="high">Maior XP</option>
+                    <option value="low">Menor XP</option>
+                </select>
+
+                <!-- ATRIBUTO -->
+                <select
+                    id="filter-attr"
+                    class="bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm"
+                >
+                    <option value="">Atributo</option>
+                    <option value="str">FORÇA</option>
+                    <option value="agi">AGILIDADE</option>
+                    <option value="int">INTELIGÊNCIA</option>
+                    <option value="con">CONSTITUIÇÃO</option>
+                    <option value="wis">SABEDORIA</option>
+                    <option value="cha">CARISMA</option>
+                </select>
+
+            </div>
+        </div>
+    </div>
+
 
     <!-- BOARD -->
     <main class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
 
         <!-- URGENT -->
         <section class="bg-slate-800 rounded-xl p-4 flex flex-col">
-            <h2 class="text-lg font-bold mb-4 text-red-400">
-                🔥 Missões Urgentes
+            <h2 class="text-lg font-bold mb-4 text-red-400" style="text-align: center;">
+                Missões Urgentes
             </h2>
 
             <div
@@ -59,9 +158,9 @@
         </section>
 
         <!-- DAILY -->
-        <section class="bg-slate-800 rounded-xl p-4 flex flex-col">
+        <section class="bg-slate-800 rounded-xl p-4 flex flex-col" style="text-align: center;">
             <h2 class="text-lg font-bold mb-4 text-emerald-400">
-                ☀️ Missões Diárias
+                Missões Diárias
             </h2>
 
             <div
@@ -71,9 +170,9 @@
         </section>
 
         <!-- WEEKLY -->
-        <section class="bg-slate-800 rounded-xl p-4 flex flex-col">
+        <section class="bg-slate-800 rounded-xl p-4 flex flex-col" style="text-align: center;">
             <h2 class="text-lg font-bold mb-4 text-indigo-400">
-                📅 Missões Semanais
+                Missões Semanais
             </h2>
 
             <div
@@ -106,7 +205,135 @@
     <script src="js/api.js"></script>
 
     <div
-        id="task-modal"
+    id="task-modal"
+    class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50"
+    >
+        <!-- CARD DO MODAL -->
+        <div
+            class="
+                bg-slate-800
+                border border-slate-700
+                rounded-2xl
+                p-6
+                w-full max-w-lg
+                animate-fade-in
+            "
+        >
+
+            <!-- HEADER -->
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modal-title" class="text-xl font-semibold"></h2>
+
+                <div class="flex gap-2">
+                    <button
+                        id="edit-task-btn"
+                        title="Editar"
+                        class="text-slate-400 hover:text-indigo-400"
+                    >✏️</button>
+
+                    <button
+                        id="delete-task-btn"
+                        title="Excluir"
+                        class="text-slate-400 hover:text-red-400"
+                    >🗑️</button>
+
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-white">
+                        ✕
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW MODE -->
+            <div id="task-view" class="space-y-2 text-sm">
+                <p><strong>Descrição:</strong> <span id="modal-description"></span></p>
+                <p><strong>Categoria:</strong> <span id="modal-category"></span></p>
+                <p><strong>XP Base:</strong> <span id="modal-xp"></span></p>
+                <p><strong>Frequência:</strong> <span id="modal-frequency"></span></p>
+                <p><strong>Sequência atual:</strong> <span id="modal-streak"></span></p>
+
+                <div class="mt-3">
+                    <h3 class="font-semibold mb-1">Atributos afetados</h3>
+                    <ul id="modal-attributes" class="list-disc list-inside"></ul>
+                </div>
+            </div>
+
+            <!-- EDIT MODE -->
+            <form id="task-edit" class="hidden space-y-4 text-sm">
+                <input
+                    id="edit-name"
+                    placeholder="Nome da missão"
+                    class="w-full bg-slate-900
+                    border border-slate-600
+                    rounded-lg
+                    px-3 py-2"
+                />
+
+                <textarea
+                    id="edit-description"
+                    placeholder="Descrição (opcional)"
+                    class="w-full bg-slate-900
+                    border border-slate-600
+                    rounded-lg
+                    px-3 py-2"
+                ></textarea>
+
+                <input
+                    id="edit-category"
+                    placeholder="Categoria (exemplo: fitness)"
+                    class="w-full bg-slate-900
+                    border border-slate-600
+                    rounded-lg
+                    px-3 py-2"
+                />
+
+                <div class="flex gap-3">
+                    <select
+                        id="edit-frequency"
+                        class="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2"
+                    >
+                        <option value="once">Uma vez</option>
+                        <option value="daily">Diária</option>
+                        <option value="weekly">Semanal</option>
+                    </select>
+
+
+                    <input
+                        id="edit-xp"
+                        type="number"
+                        placeholder="XP"
+                        class="w-32 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2"
+                    />
+
+                </div>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <input id="edit-str" placeholder="FORÇA" class="attr-input" />
+                    <input id="edit-agi" placeholder="AGILIDADE" class="attr-input" />
+                    <input id="edit-int" placeholder="INTELIGÊNCIA" class="attr-input" />
+                    <input id="edit-con" placeholder="CONSTITUIÇÃO" class="attr-input" />
+                    <input id="edit-wis" placeholder="SABEDORIA" class="attr-input" />
+                    <input id="edit-cha" placeholder="CARISMA" class="attr-input" />
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="submit" class="flex-1 bg-primary rounded-lg py-2">
+                        Salvar
+                    </button>
+                    <button
+                        type="button"
+                        onclick="cancelEdit()"
+                        class="flex-1 bg-slate-600 rounded-lg py-2"
+                    >
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CREATE TASK MODAL -->
+    <div
+        id="create-task-modal"
         class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50"
     >
         <div
@@ -115,31 +342,260 @@
                 border border-slate-700
                 rounded-2xl
                 p-6
-                w-full max-w-md
+                w-full max-w-lg
                 animate-fade-in
             "
         >
             <div class="flex justify-between items-center mb-4">
-                <h2 id="modal-title" class="text-xl font-semibold"></h2>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white">
+                <h2 class="text-xl font-semibold">
+                    ➕ Nova Missão
+                </h2>
+                <button onclick="closeCreateTaskModal()" class="text-slate-400 hover:text-white">
                     ✕
                 </button>
             </div>
 
-            <p id="modal-description" class="text-slate-300 mb-4"></p>
+            <form id="create-task-form" class="space-y-4">
 
-            <div class="space-y-2 text-sm">
-                <p><strong>Categoria:</strong> <span id="modal-category"></span></p>
-                <p><strong>XP Base:</strong> <span id="modal-xp"></span></p>
-                <p><strong>Frequência:</strong> <span id="modal-frequency"></span></p>
-                <p><strong>Streak atual:</strong> <span id="modal-streak"></span></p>
-            </div>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Nome da missão"
+                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2"
+                    required
+                />
 
-            <div class="mt-4">
-                <h3 class="font-semibold mb-2">Atributos afetados</h3>
-                <ul id="modal-attributes" class="list-disc list-inside text-sm"></ul>
-            </div>
+                <textarea
+                    name="description"
+                    placeholder="Descrição (opcional)"
+                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2"
+                ></textarea>
+
+                <input
+                    type="text"
+                    name="category"
+                    placeholder="Categoria (ex: fitness, estudo)"
+                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2"
+                    required
+                />
+
+                <div class="flex gap-3">
+                    <select
+                        name="frequency"
+                        class="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2"
+                        required
+                    >
+                        <option value="">Frequência</option>
+                        <option value="once">Uma vez</option>
+                        <option value="daily">Diária</option>
+                        <option value="weekly">Semanal</option>
+                    </select>
+
+                    <input
+                        type="number"
+                        name="base_xp"
+                        placeholder="XP"
+                        class="w-32 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2"
+                        required
+                    />
+                </div>
+
+                <!-- ATRIBUTOS -->
+                <div>
+                    <h3 class="font-semibold mb-2 text-sm text-slate-300">
+                        Atributos afetados
+                    </h3>
+
+                    <div class="grid grid-cols-3 gap-2 text-sm">
+                        <input type="number" name="str" placeholder="FORÇA" class="attr-input" />
+                        <input type="number" name="agi" placeholder="AGILIDADE" class="attr-input" />
+                        <input type="number" name="int" placeholder="INTELIGÊNCIA" class="attr-input" />
+                        <input type="number" name="con" placeholder="CONSTITUIÇÃO" class="attr-input" />
+                        <input type="number" name="wis" placeholder="SABEDORIA" class="attr-input" />
+                        <input type="number" name="cha" placeholder="CARISMA" class="attr-input" />
+                    </div>
+                </div>
+
+                <button
+                    type="submit"
+                    class="
+                        w-full
+                        bg-primary
+                        hover:bg-indigo-500
+                        text-white
+                        font-semibold
+                        py-2
+                        rounded-xl
+                        transition
+                    "
+                >
+                    Criar Missão
+                </button>
+
+            </form>
         </div>
     </div>
+    <script>
+        let currentTask = null;
+
+        const createTaskModal = document.getElementById("create-task-modal");
+
+        document.getElementById("new-task").addEventListener("click", () => {
+            createTaskModal.classList.remove("hidden");
+            createTaskModal.classList.add("flex");
+        });
+
+        function closeCreateTaskModal() {
+            createTaskModal.classList.add("hidden");
+            createTaskModal.classList.remove("flex");
+        }
+
+        document
+        .getElementById("create-task-form")
+        .addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+
+            const attributes = [];
+            const attrMap = ["str", "agi", "int", "con", "wis", "cha"];
+
+            attrMap.forEach(attr => {
+                const value = parseInt(formData.get(attr));
+                if (!isNaN(value) && value !== 0) {
+                    attributes.push({
+                        attribute: attr,
+                        value: value
+                    });
+                }
+            });
+
+            const payload = {
+                name: formData.get("name"),
+                description: formData.get("description") || null,
+                category: formData.get("category"),
+                frequency: formData.get("frequency"),
+                base_xp: Number(formData.get("base_xp")),
+                attributes: attributes
+            };
+
+            const res = await fetch(`${API_URL}/tasks`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                alert(err.detail || "Erro ao criar missão");
+                return;
+            }
+
+            closeCreateTaskModal();
+            form.reset();
+            await loadTasks();
+        });
+
+        // Editing task
+        document.getElementById("edit-task-btn").onclick = () => {
+            toggleEdit(true);
+
+            document.getElementById("edit-name").value = currentTask.name;
+            document.getElementById("edit-description").value = currentTask.description || "";
+            document.getElementById("edit-category").value = currentTask.category;
+            document.getElementById("edit-frequency").value = currentTask.frequency;
+            document.getElementById("edit-xp").value = currentTask.base_xp;
+
+            ["str","agi","int","con","wis","cha"].forEach(attr => {
+                const found = currentTask.attributes.find(a => a.attribute === attr);
+                document.getElementById(`edit-${attr}`).value = found?.value || "";
+            });
+        };
+
+        document.getElementById("task-edit").addEventListener("submit", async e => {
+            e.preventDefault();
+
+            const attrs = [];
+            ["str","agi","int","con","wis","cha"].forEach(attr => {
+                const v = parseInt(document.getElementById(`edit-${attr}`).value);
+                if (!isNaN(v) && v !== 0) {
+                    attrs.push({ attribute: attr, value: v });
+                }
+            });
+
+            const payload = {
+                name: document.getElementById("edit-name").value,
+                description: document.getElementById("edit-description").value,
+                category: document.getElementById("edit-category").value,
+                frequency: document.getElementById("edit-frequency").value,
+                base_xp: Number(document.getElementById("edit-xp").value),
+                attributes: attrs
+            };
+
+            const res = await fetch(`${API_URL}/tasks/${currentTask.id}`, {
+                method: "PUT",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                alert("Erro ao atualizar missão");
+                return;
+            }
+
+            closeModal();
+            await loadTasks();
+        });
+
+        document.getElementById("delete-task-btn").onclick = async () => {
+            if (!confirm("Deseja realmente excluir esta missão?")) return;
+
+            const res = await fetch(`${API_URL}/tasks/${currentTask.id}`, {
+                method: "DELETE",
+                credentials: "include"
+            });
+
+            if (!res.ok) {
+                alert("Erro ao excluir missão");
+                return;
+            }
+
+            closeModal();
+            await loadTasks();
+        };
+
+
+        // Menu suspenso dos filtros
+        const toggleBtn = document.getElementById("toggle-filters");
+        const filterBar = document.getElementById("filter-bar");
+
+        let filtersOpen = false;
+
+        toggleBtn.addEventListener("click", () => {
+            filtersOpen = !filtersOpen;
+
+            filterBar.classList.toggle("hidden", !filtersOpen);
+
+            toggleBtn.innerText = filtersOpen
+                ? "✖ Fechar filtro de missões"
+                : "🔍 Filtrar missões";
+        });
+
+        loadProfile();
+        loadTasks();
+
+        // Aplicando filtros automaticamente
+        ["filter-status", "filter-xp", "filter-attr"].forEach(id => {
+            document.getElementById(id).addEventListener("change", () => {
+                loadTasks(getActiveFilters());
+            });
+        });
+
+    </script>
 </body>
 </html>

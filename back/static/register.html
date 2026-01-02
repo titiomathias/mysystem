@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro | MySystem</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center">
+
+    <div
+        class="
+            w-full max-w-sm
+            bg-slate-800
+            rounded-2xl
+            p-8
+            shadow-xl
+            border border-slate-700
+            animate-fade-in
+        "
+    >
+        <!-- TITLE -->
+        <h1 class="text-3xl font-bold text-center mb-6 tracking-wide">
+            ⚔️ Criar Conta
+        </h1>
+
+        <!-- FORM -->
+        <form id="register-form" class="space-y-4">
+
+            <input
+                type="text"
+                id="username"
+                placeholder="Username"
+                required
+                class="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                required
+                class="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Senha"
+                required
+                class="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+
+            <button
+                type="submit"
+                class="
+                    w-full
+                    bg-primary
+                    text-white
+                    py-3
+                    rounded-xl
+                    font-semibold
+                    hover:bg-indigo-500
+                    transition-all
+                    active:scale-95
+                "
+            >
+                Registrar
+            </button>
+        </form>
+
+        <!-- ERROR -->
+        <p id="error" class="text-sm text-red-400 text-center mt-4 min-h-[1.25rem]"></p>
+
+        <!-- LINK -->
+        <p class="text-sm text-center mt-4 text-slate-400">
+            Já tem conta?
+            <a href="login.html" class="text-primary hover:underline">Entrar</a>
+        </p>
+    </div>
+
+    <script src="js/register.js"></script>
+
+    <style>
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.4s ease-out;
+        }
+    </style>
+</body>
+</html>
